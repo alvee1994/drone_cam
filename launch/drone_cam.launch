@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+        <node name="drone_a_cam_pub" type="drone_a_cam_pub.py" pkg="drone_cam" output="screen"/>
+        <node name="drone_b_cam_pub" type="drone_b_cam_pub.py" pkg="drone_cam" output="screen"/>
+        <node name="drone_c_cam_pub" type="drone_c_cam_pub.py" pkg="drone_cam" output="screen"/>
+</launch>
+

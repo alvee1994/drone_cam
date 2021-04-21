@@ -3,23 +3,28 @@ import cv2
 import sys
 import numpy as np
 import rospy
+from sensor_msgs.msg import Image
 from drone_cam.msg import drone_feed
 from cv_bridge import CvBridge, CvBridgeError
+import subprocess
 
-filename = '/home/husky/borealis_ws/src/drone_cam/src/office_drone_c.mp4'
+package_directory = subprocess.check_output(["rospack", "find", "drone_cam"]).decode().strip('\n')
+filename = package_directory + '/src/office_drone_c.mp4'
 cap = cv2.VideoCapture(filename)
 frame_count = cap.get(cv2.CAP_PROP_FRAME_COUNT)
 frames = 0
 bridge = CvBridge()
 
+topic = '/drone_c/camera/image'
+pub = rospy.Publisher(topic, drone_feed, queue_size=10)
+pubimg = rospy.Publisher(topic + '_Image', Image, queue_size=10)
+rospy.init_node('drone3', anonymous=True)
+rate = rospy.Rate(30)
+img = drone_feed()
+imgmsg = Image()
+
 def pubcam():
     global frames, cap, frame_count
-    topic = '/drone_c/camera/image'
-    pub = rospy.Publisher(topic, drone_feed, queue_size=10)
-    rospy.init_node('drone3', anonymous = True)
-    rate = rospy.Rate(30)
-    img = drone_feed()
-
     while not rospy.is_shutdown():
         try:
             frames += 1
@@ -38,6 +43,8 @@ def pubcam():
             img.image = bridge.cv2_to_imgmsg(frame, "bgr8")
             img.name = topic
             pub.publish(img)
+            imgmsg = img.image
+            pubimg.publish(imgmsg)
             rate.sleep()
         except CvBridgeError as e:
             rospy.loginfo(e)

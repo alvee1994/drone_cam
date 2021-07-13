@@ -55,11 +55,11 @@ class viewer:
                 ret, frame = self.cap.read()
 
                 self.detectFaces(frame)
-                self.img.image = self.bridge.cv2_to_imgmsg(self.frame_copy, "bgr8")
+                self.imgmsg = self.bridge.cv2_to_imgmsg(self.frame_copy, "bgr8")
                 # self.img.name = self.topic
                 # self.pub.publish(self.img)
 
-                self.imgmsg = self.img.image
+                # self.imgmsg = self.img.image
                 self.pubimg.publish(self.imgmsg)
                 self.rate.sleep()
             except CvBridgeError as e:
